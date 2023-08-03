@@ -5,7 +5,12 @@ A module to obfuscate sensitive information.
 import re
 from typing import List
 import logging
+import csv
+from logging import StreamHandler
 
+
+# Define the PII_FIELDS constant containing the fields considered PII
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 def filter_datum(
         fields: List[str],
@@ -79,3 +84,25 @@ class RedactingFormatter(logging.Formatter):
                 log_message,
                 self.SEPARATOR
                 )
+
+
+def get_logger() -> logging.Logger:
+    """ Creates and configures the "user_data" logger.
+
+    Returns:
+    A logging.Logger object with the specified configuration.
+    """
+    # Create a RedactingFormatter with PII_FIELDS as parameters
+    formatter = RedactingFormatter(fields=PII_FIELDS, redaction="***", separator=";")
+
+    # Create and configure the "user_data" logger
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    # Add a StreamHandler with the RedactingFormatter to the logger
+    stream_handler = StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    return logger
