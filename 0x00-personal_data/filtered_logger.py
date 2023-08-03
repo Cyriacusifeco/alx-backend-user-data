@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-
+"""
+A module to obfuscate sensitive information.
+"""
 import re
 from typing import List
 
