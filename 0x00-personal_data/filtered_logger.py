@@ -12,6 +12,7 @@ from logging import StreamHandler
 # Define the PII_FIELDS constant containing the fields considered PII
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
+
 def filter_datum(
         fields: List[str],
         redaction: str,
@@ -93,7 +94,11 @@ def get_logger() -> logging.Logger:
     A logging.Logger object with the specified configuration.
     """
     # Create a RedactingFormatter with PII_FIELDS as parameters
-    formatter = RedactingFormatter(fields=PII_FIELDS, redaction="***", separator=";")
+    formatter = RedactingFormatter(
+            fields=PII_FIELDS,
+            redaction="***",
+            separator=";"
+            )
 
     # Create and configure the "user_data" logger
     logger = logging.getLogger("user_data")
