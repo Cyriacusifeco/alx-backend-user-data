@@ -4,6 +4,7 @@ A module to obfuscate sensitive information.
 """
 import re
 from typing import List
+import logging
 
 
 def filter_datum(
@@ -42,5 +43,38 @@ def filter_datum(
     >>> print(obfuscated_log)
     User john_doe logged in with [REDACTED] and paid using [REDACTED].
     """
-    pattern = r'\b(?:' + '|'.join(map(re.escape, fields)) + r')\b'
-    return re.sub(pattern, redaction, message)
+    fields_set = set(fields)
+    parts = message.split(separator)
+    for i, part in enumerate(parts):
+        field_value = part.split("=")
+        if len(field_value) == 2 and field_value[0].strip() in fields_set:
+            parts[i] = f"{field_value[0]}={redaction}"
+    return separator.join(parts)
+
+
+class RedactingFormatter(logging.Formatter):
+    """ Redacting Formatter class
+        """
+
+    REDACTION = "***"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    SEPARATOR = ";"
+
+    def __init__(self, fields: List[str]):
+        """
+        constructor method.
+        """
+        self.fields = fields
+        super(RedactingFormatter, self).__init__(self.FORMAT)
+
+    def format(self, record: logging.LogRecord) -> str:
+        """
+        formatter
+        """
+        log_message = super().format(record)
+        return filter_datum(
+                self.fields,
+                self.REDACTION,
+                log_message,
+                self.SEPARATOR
+                )
