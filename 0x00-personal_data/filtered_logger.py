@@ -43,13 +43,14 @@ def filter_datum(
     >>> print(obfuscated_log)
     User john_doe logged in with [REDACTED] and paid using [REDACTED].
     """
-    fields_set = set(fields)
-    parts = message.split(separator)
-    for i, part in enumerate(parts):
-        field_value = part.split("=")
-        if len(field_value) == 2 and field_value[0].strip() in fields_set:
-            parts[i] = f"{field_value[0]}={redaction}"
-    return separator.join(parts)
+
+    for field in fields:
+        message = re.sub(
+                f'{field}=.*?{separator}',
+                f'{field}={redaction}{separator}',
+                message
+                )
+    return message
 
 
 class RedactingFormatter(logging.Formatter):
