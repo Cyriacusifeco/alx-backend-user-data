@@ -21,7 +21,22 @@ class Auth:
         :return: True if authentication is required, False otherwise.
         :rtype: bool
         """
-        return path not in excluded_paths
+        if path is None or not excluded_paths:
+            return True
+        
+        # Add trailing slash to path for slash tolerance
+        path_with_slash = path if path.endswith('/') else path + '/'
+        
+        for excluded_path in excluded_paths:
+            # Add trailing slash to excluded_path for slash tolerance
+            excluded_path_with_slash = (
+                excluded_path if excluded_path.endswith('/') else excluded_path + '/'
+            )
+            
+            if path_with_slash.startswith(excluded_path_with_slash):
+                return False
+        
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
