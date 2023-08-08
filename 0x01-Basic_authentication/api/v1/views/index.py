@@ -9,7 +9,7 @@ app_views = Blueprint("app_views", __name__)
 
 
 @app_views.route("/api/v1/unauthorized", methods=["GET"], strict_slashes=False)
-def unauthorized_test():
+def unauthorized_test() -> str:
     """ Endpoint to test unauthorized error handler
     """
     abort(401)
