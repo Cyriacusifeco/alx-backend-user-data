@@ -15,6 +15,13 @@ def unauthorized_test() -> str:
     abort(401)
 
 
+@app_views.route('/api/v1/forbidden', strict_slashes=False)
+def forbidden() -> str:
+    """ View to test forbidden error handler
+    """
+    abort(403)
+
+
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status() -> str:
     """ GET /api/v1/status
