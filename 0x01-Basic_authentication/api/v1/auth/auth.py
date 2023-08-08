@@ -48,9 +48,11 @@ class Auth:
         :return: The authorization header value.
         :rtype: str
         """
-        if request:
-            return request.headers.get('Authorization', None)
-        return None
+        if request is None:
+            return None
+
+        authorization_header = request.headers.get('Authorization', None)
+        return authorization_header
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
