@@ -24,7 +24,7 @@ if getenv("AUTH_TYPE") == "auth":
 def before_request_handler():
     if auth is None:
         return
-    
+
     excluded_paths = [
             '/api/v1/status/',
             '/api/v1/unauthorized/',
@@ -42,6 +42,7 @@ def before_request_handler():
 
     if auth.current_user(request) is None:
         abort(403)
+
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
