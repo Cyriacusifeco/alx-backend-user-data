@@ -7,6 +7,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import Base, User
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
+
 
 class DB:
     """DB class
@@ -28,15 +31,15 @@ class DB:
             DBSession = sessionmaker(bind=self._engine)
             self.__session = DBSession()
         return self.__session
-    
+
     def add_user(self, email: str, hashed_password: str) -> User:
         """
         Add a new user to the database.
-        
+
         Args:
             email (str): The email of the user.
             hashed_password (str): The hashed password of the user.
-            
+
         Returns:
             User: The created User object.
         """
@@ -44,6 +47,37 @@ class DB:
         self._session.add(new_user)
         self._session.commit()
         return new_user
+
+    def find_user_by(self, **kwargs):
+        """
+        Find and return a user from the users table based on input arguments.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments for filtering the query.
+
+        Returns:
+            User: The found User object.
+
+        Raises:
+            NoResultFound: If no result is found for the given query.
+            InvalidRequestError: If wrong query arguments are passed.
+        """
+        if not kwargs:
+            raise InvalidRequestError
+
+        columns = User.__table__.columns.keys()
+
+        for key in kwargs.keys():
+            if key not in columns:
+                raise InvalidRequestError
+
+        user = self._session.query(User).filter_by(**kwargs).first()
+
+        if user is None:
+            raise NoResultFound
+
+        return user
+
 
 if __name__ == "__main__":
     my_db = DB()
