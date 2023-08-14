@@ -79,7 +79,9 @@ class DB:
         return user
 
     def update_user(self, user_id, **kwargs):
-
+        """
+        Update user method
+        """
         try:
             user = self.find_user_by(id=user_id)
             
@@ -95,6 +97,7 @@ class DB:
             self._session.commit()
         except NoResultFound:
             raise NoResultFound("User not found")
+
 
 if __name__ == "__main__":
     my_db = DB()
