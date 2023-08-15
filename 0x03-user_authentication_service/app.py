@@ -3,7 +3,7 @@
 Simple flask app
 """
 
-from flask import Flask, request, jsonify, make_response, abort
+from flask import Flask, request, jsonify, make_response, abort, redirect
 from auth import Auth
 
 app = Flask(__name__)
@@ -58,6 +58,24 @@ def login():
             return response
     else:
         abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'])
+def logout():
+    """
+    Logs a user out of an existing session
+    """
+    session_id = request.cookies.get('session_id')
+
+    if session_id:
+        user = auth.get_user_from_session_id(session_id)
+        if user:
+            auth.destroy_session(user.id)
+            response = redirect('/')
+            response.delete_cookie('session_id')
+            return response
+
+    return jsonify(message="Forbidden"), 403
 
 
 if __name__ == "__main__":
