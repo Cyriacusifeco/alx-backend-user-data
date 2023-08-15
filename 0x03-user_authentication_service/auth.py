@@ -87,3 +87,18 @@ class Auth:
         user = self._db.find_user_by(id=user_id)
         user.session_id = None
         self._db._session.commit()
+
+
+    def get_reset_password_token(self, email: str) -> str:
+        """
+        Reset password
+        """
+        user = self._db.find_user_by(email=email)
+
+        if user is None:
+            raise ValueError(f"User {email} not found")
+
+        reset_token = str(uuid.uuid4())
+        self._db.update_user(user.id, reset_token=reset_token)
+        
+        return reset_token
