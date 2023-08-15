@@ -68,12 +68,24 @@ def logout():
     session_id = request.cookies.get('session_id')
 
     if session_id:
-        user = auth.get_user_from_session_id(session_id)
+        user = AUTH.get_user_from_session_id(session_id)
         if user:
             auth.destroy_session(user.id)
             response = redirect('/')
             response.delete_cookie('session_id')
             return response
+
+    return jsonify(message="Forbidden"), 403
+
+
+@app.route('/profile', methods=['GET'])
+def profile():
+    session_id = request.cookies.get('session_id')
+
+    if session_id:
+        user = AUTH.get_user_from_session_id(session_id)
+        if user:
+            return jsonify(email=user.email), 200
 
     return jsonify(message="Forbidden"), 403
 
