@@ -84,13 +84,14 @@ class DB:
         """
         try:
             user = self.find_user_by(id=user_id)
-            
+
             # Check if the provided kwargs correspond to user attributes
-            valid_attributes = [column.key for column in User.__table__.columns]
+            columns = User.__table__.columns
+            valid_attributes = [column.key for column in columns]
             for key in kwargs.keys():
                 if key not in valid_attributes:
                     raise ValueError(f"Invalid attribute: {key}")
-            
+
             # Update user attributes and commit changes
             for key, value in kwargs.items():
                 setattr(user, key, value)

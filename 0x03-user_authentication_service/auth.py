@@ -108,9 +108,9 @@ class Auth:
         """
         try:
             user = self._db.find_user_by(reset_token=reset_token)
-            hashed_password = self._hash_password(password)
+            hashed_password = _hash_password(password)
             user.hashed_password = hashed_password
             user.reset_token = None
-            self._db.commit()
+            self._db._session.commit()
         except NoResultFound:
             raise ValueError("No user found for the given reset token.")

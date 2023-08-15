@@ -5,6 +5,7 @@ Simple flask app
 
 from flask import Flask, request, jsonify, make_response, abort, redirect
 from auth import Auth
+from sqlalchemy.orm.exc import NoResultFound
 
 app = Flask(__name__)
 
@@ -70,7 +71,7 @@ def logout():
     if session_id:
         user = AUTH.get_user_from_session_id(session_id)
         if user:
-            auth.destroy_session(user.id)
+            AUTH.destroy_session(user.id)
             response = redirect('/')
             response.delete_cookie('session_id')
             return response
@@ -98,7 +99,7 @@ def get_reset_password_token():
     email = request.form.get('email')
 
     try:
-        reset_token = auth.get_reset_password_token(email)
+        reset_token = AUTH.get_reset_password_token(email)
         response = {
             "email": email,
             "reset_token": reset_token
@@ -118,7 +119,7 @@ def update_password():
     new_password = request.form.get('new_password')
 
     try:
-        auth.update_password(reset_token, new_password)
+        AUTH.update_password(reset_token, new_password)
         return jsonify({
             "email": email,
             "message": "Password updated"
